@@ -1,0 +1,11 @@
+.first {
+    background-image: url(/images/ghost.png);
+}
+
+.second {
+    background-image: url(/images/pumpkin.png);
+}
+
+.third {
+    background-image: url(../images/pumpkin.png);
+}
