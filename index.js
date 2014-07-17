@@ -12,10 +12,12 @@ module.exports = function(opt) {
 
   var opt = opt || {};
 
-  var regex = opt.regex || /url\((?:"|'|)(.*?)(?:"|'|)\)/g;
+  var regex = opt.regex || /(?:url\(["']?(.*?)['"]?\)|src=["'](.*?)['"]|src=([^\s\>]+)(?:\>|\s)|href=["'](.*?)['"]|href=([^\s\>]+)(?:\>|\s))/g;
   var template = opt.template || '{name}-{hash}.{ext}';
   var assetPath = opt.assetPath != null ? String(opt.assetPath) : '';
   var urlPrefix = opt.urlPrefix != null ? String(opt.urlPrefix) : '/';
+  var flatten = !!opt.flatten;
+  var passAll = !!opt.passAll;
   var hashLength = opt.hashLength && opt.hashLength >= 4 && opt.hashLength <= 32 ? parseInt(opt.hashLength) : 8;
   var assets = [];
 
@@ -31,20 +33,36 @@ module.exports = function(opt) {
     }));
   }
 
-  function addAssetToOutput(asset) {
-    if (asset.added) {
+  function getBaseDir(file) {
+    return file.origPath.split(file.origBase).slice(0, -1).join('');
+  }
+
+  function addAssetToOutput(asset, direct) {
+    if (direct) {
+      context.push(asset);
       return;
     }
-    var collision = false;
-    assets.forEach(function(asset2) {
-      if (asset2.added && asset2.path === asset.path) {
-        collision = true;
+    var basename = path.basename(asset.path);
+    if (!asset.added) {
+      var collision = false;
+      assets.forEach(function(asset2) {
+        if (asset2.added && path.basename(asset2.origPath) === basename) {
+          collision = true;
+        }
+      });
+      if (!collision) {
+        var tmpPath = getFileNameWithHash(asset);
+        if (assetPath) {
+          tmpPath = path.join(assetPath, path.basename(tmpPath));
+        }
+        asset.path = path.join(getBaseDir(asset), tmpPath);
+        asset.base = '.';
+        basename = path.basename(asset.path);
+        context.push(asset);
       }
-    });
-    if (!collision) {
-      context.push(asset);
+      asset.added = true;
     }
-    asset.added = true;
+    return assetPath ? path.join(assetPath, basename) : basename;
   }
 
   function getFileNameWithHash(file) {
@@ -69,9 +87,9 @@ module.exports = function(opt) {
         throw new gutil.PluginError(PLUGIN_NAME,  'Streaming not supported');
       }
 
-      file.origPath = file.path;
-      file.origBase = file.base;
-      file.origCwd = file.cwd;
+      file.origPath = file.origPath || file.path;
+      file.origBase = file.origBase || file.base;
+      file.origCwd = file.origCwd || file.cwd;
 
       file.type = type;
       if (type) {
@@ -79,6 +97,10 @@ module.exports = function(opt) {
       }
       file.added = false;
       buffer.push(file);
+
+      if (type === 'asset' && passAll) {
+        addAssetToOutput(file, true);
+      }
 
       cb();
     }
@@ -100,7 +122,7 @@ module.exports = function(opt) {
       if (isAsset) {
         assetsMap[file.path] = file;
         file.cwd = path.dirname(file.path);
-        file.base = './';
+        file.base = '.';
       }
       return isAsset;
     });
@@ -119,24 +141,20 @@ module.exports = function(opt) {
             .replace(path.join(asset.origCwd, asset.origBase), '')
             .replace(asset.origBase, '')
             .replace(/^\//, '');
-          var relativePath = path.relative(path.dirname(file.path), asset.origPath);
+          var relativePath = path.relative(path.dirname(file.origPath), asset.origPath);
 
           if (absolutePath === url || relativePath === url) {
-            asset.path = getFileNameWithHash(asset);
-            var replaced = urlPrefix + path.join(assetPath, path.basename(asset.path));
+            var tmpPath = addAssetToOutput(asset);
+            var replaced = urlPrefix + tmpPath;
             str = str.replace(found, replaced);
-
-            if (assetPath) {
-              asset.path = path.join(assetPath, path.basename(asset.path));
-            }
-
-            addAssetToOutput(asset);
           }
         });
         return str;
       });
       file.contents = new Buffer(content);
-      file.base = path.dirname(file.path);
+      if (flatten) {
+        file.base = path.dirname(file.path);
+      }
       context.push(file);
     });
 

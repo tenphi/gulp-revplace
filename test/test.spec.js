@@ -47,12 +47,13 @@ function checkFile(file) {
 
 describe('Test section', function() {
 
-  beforeEach(function() {
+  before(function() {
     rmDir('test/output');
   });
 
   it('should collect assets with regular regexp', function(cb) {
-    gulp.src('test/input/styles/style.css', { base: 'test/input' })
+    gulp
+      .src('test/input/styles/style.css', { base: 'test/input' })
       .pipe(revplace({
         assets: gulp.src('test/input/images/*.{png,gif,jpg}', { base: 'test/input' }),
         assetPath: 'assets'
@@ -60,7 +61,7 @@ describe('Test section', function() {
       .pipe(size({ showFiles: true }))
       .pipe(gulp.dest('test/output'))
       .on('end', function() {
-        compareFile('style.css');
+        compareFile('styles/style.css', 'style.css');
         checkFile('assets/ghost-6ce6c490.png');
         checkFile('assets/pumpkin-d5cb9db9.png');
         cb();
@@ -68,7 +69,8 @@ describe('Test section', function() {
   });
 
   it('should collect assets with custom regexp', function(cb) {
-    gulp.src('test/input/scripts/script.js', { base: 'test/input' })
+    gulp
+      .src('test/input/scripts/script.js', { base: 'test/input' })
       .pipe(revplace({
         regex: /ASSET\(['"](.+)['"]\)/g,
         assets: gulp.src('test/input/images/*.{png,gif,jpg}', { base: 'test/input' }),
@@ -77,9 +79,42 @@ describe('Test section', function() {
       .pipe(size({ showFiles: true }))
       .pipe(gulp.dest('test/output'))
       .on('end', function() {
-        compareFile('script.js');
+        compareFile('scripts/script.js', 'script.js');
         checkFile('assets/cat-9121e197.png');
         checkFile('assets/zombie-b52ed4d8.png');
+        cb();
+      });
+  });
+
+  it('should handle complex replacement', function(cb) {
+    gulp
+      .src('test/input/index.html', { base: 'test/input' })
+      .pipe(revplace({
+        assets: es.merge(
+          gulp
+            .src('test/input/styles/style.css', { base: 'test/input' })
+            .pipe(revplace({
+              assets: gulp.src('test/input/images/*.{png,gif,jpg}', { base: 'test/input' }),
+              assetPath: 'assets'
+            })),
+          gulp
+            .src('test/input/scripts/script.js', { base: 'test/input' })
+            .pipe(revplace({
+              regex: /\$ASSET\(['"](.+)['"]\)/g,
+              assets: gulp.src('test/input/images/*.{png,gif,jpg}', { base: 'test/input' }),
+              assetPath: 'assets'
+            }))
+        ).pipe(size({ showFiles: true })),
+        assetPath: '',
+        flatten: true,
+        passAll: true
+      }))
+      .pipe(size({ showFiles: true }))
+      .pipe(gulp.dest('test/output'))
+      .on('end', function() {
+        compareFile('index.html');
+        checkFile('script-d550d550.js');
+        checkFile('style-35006e53.css');
         cb();
       });
   });
