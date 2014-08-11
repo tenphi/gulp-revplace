@@ -215,14 +215,12 @@ _Type_: `String`
 
 _Usage_: Strip prefix from initial urls
 
-_Default_: ``
-
 #### skipUnmentioned
 _Type_: `Boolean`
 
 _Usage_: If TRUE only assets that are mentioned in source files will be passed through stream. Source files are always passed.
 
-_Default: true
+_Default_: true
 
 ## License
 
