@@ -18,6 +18,7 @@ module.exports = function(opt) {
   var addPrefix = opt.addPrefix != null ? String(opt.addPrefix) : '/';
   var stripPrefix = opt.stripPrefix != null ? String(opt.stripPrefix).replace(/^\//, '') : '';
   var skipUnmentioned = opt.skipUnmentioned != null ? !!opt.skipUnmentioned : true;
+  var verbose = opt.verbose != null ? !!opt.verbose : false;
   var assets = [];
 
   function fileHandler(file, enc, cb) {
@@ -76,6 +77,8 @@ module.exports = function(opt) {
               context.push(asset);
             var replaced = addPrefix + newPath;
             str = str.replace(found, replaced);
+            if (verbose)
+              gutil.log('(' + chalk.blue(getNormalPath(file.path, file.base)) + ') ' + chalk.green(found) + ' ' + chalk.yellow('->') + ' ' + chalk.green(replaced));
           }
         });
         return str;
