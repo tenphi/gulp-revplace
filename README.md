@@ -1,6 +1,6 @@
 # [gulp](http://gulpjs.com)-revplace
 
-Simple helper for [gulp-rev](http://github.com/sindresorhus/gulp-rev) to fix all references to assets. By default it doesn't pass through assets that are not mentioned in source files. It can be very useful in your build scenarios.
+Simple helper for [gulp-rev](http://github.com/sindresorhus/gulp-rev) to fix all references to assets. It works with relative urls too! By default it doesn't pass through assets that are not mentioned in source files. This plugin can be very useful in your build scenarios.
 
 ## Install
 
@@ -66,14 +66,14 @@ var baseDir = 'static';
 
 gulp.task('default', function () {
   return es.merge(
-     gulp
-       .src([baseDir + '/index.html'], { base: baseDir }),
-     gulp
-       .src([baseDir + '/*/**/*.*'], { base: baseDir })
-       .pipe(rev())
-   )
-     .pipe(revplace())
-     .pipe(gulp.dest('build'));
+    gulp
+      .src([baseDir + '/index.html'], { base: baseDir }),
+    gulp
+      .src([baseDir + '/*/**/*.*'], { base: baseDir })
+      .pipe(rev())
+  )
+    .pipe(revplace())
+    .pipe(gulp.dest('build'));
 });
 ```
 
@@ -100,7 +100,7 @@ After execution file names will be changed and all references will be replaced.
 .third { background-image: url(/images/pumpkin-cb05ce1b.png); }
 ```
 
-```javascript```
+```javascript
 // script.js
 (function() {
   var absoluteImageUrl = ASSET('/images/cat-5d0e5c9b.png');
@@ -127,17 +127,17 @@ You can even change `dirname`s of your files. It will also work like a charm.
 ```javascript
 gulp.task('default', function () {
   return es.merge(
-     gulp
-       .src([baseDir + '/index.html'], { base: baseDir }),
-     gulp
-       .src([baseDir + '/*/**/*.*'], { base: baseDir })
-       .pipe(rev())
-   )
-     .pipe(rename(function(path) {
-       path.dirname = '';
-     }))
-     .pipe(revplace())
-     .pipe(gulp.dest('build'));
+    gulp
+      .src([baseDir + '/index.html'], { base: baseDir }),
+    gulp
+      .src([baseDir + '/*/**/*.*'], { base: baseDir })
+      .pipe(rev())
+  )
+    .pipe(rename(function(path) {
+      path.dirname = '';
+    }))
+    .pipe(revplace())
+    .pipe(gulp.dest('build'));
 });
 ```
 
@@ -163,7 +163,7 @@ Structure will be changed...
 .third { background-image: url(/pumpkin-cb05ce1b.png); }
 ```
 
-```javascript```
+```javascript
 // script.js
 (function() {
   var absoluteImageUrl = ASSET('/cat-5d0e5c9b.png');
