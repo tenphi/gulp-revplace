@@ -1,20 +1,22 @@
 {
   "name": "gulp-revplace",
-  "version": "0.1.0",
-  "description": "Ultimate asset builder plugin for gulp",
+  "version": "0.2.0",
+  "description": "Ultimate asset collector and rev-helper for gulp",
   "main": "index.js",
   "scripts": {
     "test": "mocha test/*.spec.js --reporter spec"
   },
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.org:tenphi/gulp-revplacer.git"
+    "url": "git@bitbucket.org:tenphi/gulp-revplace.git"
   },
   "keywords": [
     "assets",
     "builder",
-    "replacer",
-    "rev"
+    "replace",
+    "rev",
+    "gulp",
+    "collector"
   ],
   "author": "Andrey Yamanov <tenphi@gmail.com>",
   "license": "MIT",
@@ -29,9 +31,11 @@
     "event-stream": "^3.1.5",
     "gulp": "^3.8.5",
     "gulp-clean": "^0.3.1",
+    "gulp-rename": "^1.2.0",
+    "gulp-rev": "^1.0.0",
     "gulp-size": "^0.4.0",
+    "mmmagic": "^0.3.8",
     "mocha": "^1.20.1",
-    "split2": "^0.1.2",
     "through2": "^0.5.1"
   }
 }
