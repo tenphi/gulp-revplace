@@ -222,6 +222,11 @@ _Usage_: If TRUE only assets that are mentioned in source files will be passed t
 
 _Default_: true
 
+#### verbose
+_Type_: `Boolean`
+
+_Usage_: Activate verbose mode
+
 ## License
 
 [MIT](http://opensource.org/licenses/MIT) © [Andrey Yamanov](http://tenphi.me)
