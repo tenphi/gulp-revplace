@@ -1,6 +1,6 @@
 # [gulp](http://gulpjs.com)-revplace
 
-Simple helper for [gulp-rev](http://github.com/sindresorhus/gulp-rev) to fix all references to assets. It works with relative urls too! By default it doesn't pass through assets that are not mentioned in source files. This plugin can be very useful in your build scenarios.
+Simple helper for [gulp-rev](http://github.com/sindresorhus/gulp-rev) to fix all asset references. It works with relative urls too! By default it doesn't pass through assets that are not mentioned in source files. This plugin can be very useful in your build scenarios.
 
 ## Install
 
