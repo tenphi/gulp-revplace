@@ -162,7 +162,7 @@ describe('Test section', function() {
       });
   });
 
-  it.only('should handle complex scenario', function(cb) {
+  it('should handle complex scenario', function(cb) {
     es.merge(
       gulp
         .src([inputDir + '/index.html'], { base: inputDir }),
