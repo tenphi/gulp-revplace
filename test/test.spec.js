@@ -6,10 +6,12 @@ var fs = require('fs'),
   path = require('path'),
   es = require('event-stream'),
   gulp = require('gulp'),
-  gutil = require('gulp-util'),
-  size = require('gulp-size'),
+  rev = require('gulp-rev'),
+  rename = require('gulp-rename'),
   revplace = require('../index.js'),
-  assert = require('chai').assert;
+  assert = require('chai').assert,
+  inputDir = 'test/input',
+  outputDir = 'test/output';
 
 function rmDir(dirPath) {
   try { var files = fs.readdirSync(dirPath); }
@@ -40,87 +42,156 @@ function compareFile(sourceFile, matchFile) {
   assert.equal(sourceContent, matchContent);
 }
 
-function checkFile(file) {
-
+function shouldExist(file) {
   return assert.ok(fs.existsSync(path.join('test', 'output', file)), '`' + file + '` wasn\'t found in output');
+}
+
+function shouldNotExist(file) {
+  return assert.ok(!fs.existsSync(path.join('test', 'output', file)), '`' + file + '` was found in output but it shouldn\'t be there');
 }
 
 describe('Test section', function() {
 
   before(function() {
-    rmDir('test/output');
+    rmDir(outputDir);
   });
 
-  it('should collect assets with regular regexp', function(cb) {
+  it('should handle styles', function(cb) {
     gulp
-      .src('test/input/styles/style.css', { base: 'test/input' })
-      .pipe(revplace({
-        assets: gulp.src('test/input/images/*.{png,gif,jpg}', { base: 'test/input' }),
-        assetPath: 'assets'
-      }))
-      .pipe(size({ showFiles: true }))
-      .pipe(gulp.dest('test/output'))
+      .src([inputDir + '/styles/style.css', inputDir + '/images/*.*'], { base: inputDir })
+      .pipe(rev())
+      .pipe(revplace())
+      .pipe(gulp.dest(outputDir))
       .on('end', function() {
-        compareFile('styles/style.css', 'style.css');
-        checkFile('assets/ghost-6ce6c490.png');
-        checkFile('assets/pumpkin-d5cb9db9.png');
+        shouldExist('styles/style-21373b83.css');
+        shouldExist('images/ghost-61865acd.png');
+        shouldExist('images/pumpkin-cb05ce1b.png');
+        shouldNotExist('images/cat-5d0e5c9b.png');
+        shouldNotExist('images/zombie-0dc22dba.png');
+        compareFile('styles/style-21373b83.css', 'style.css');
         cb();
       });
   });
 
-  it('should collect assets with custom regexp', function(cb) {
+  it('should handle scripts', function(cb) {
     gulp
-      .src('test/input/scripts/script.js', { base: 'test/input' })
-      .pipe(revplace({
-        regex: /ASSET\(['"](.+)['"]\)/g,
-        assets: gulp.src('test/input/images/*.{png,gif,jpg}', { base: 'test/input' }),
-        assetPath: 'assets'
-      }))
-      .pipe(size({ showFiles: true }))
-      .pipe(gulp.dest('test/output'))
+      .src([inputDir + '/scripts/script.js', inputDir + '/images/*.*'], { base: inputDir })
+      .pipe(rev())
+      .pipe(revplace())
+      .pipe(gulp.dest(outputDir))
       .on('end', function() {
-        compareFile('scripts/script.js', 'script.js');
-        checkFile('assets/cat-9121e197.png');
-        checkFile('assets/zombie-b52ed4d8.png');
+        shouldExist('scripts/script-6bc83506.js');
+        shouldNotExist('images/ghost-61865acd.png');
+        shouldNotExist('images/pumpkin-cb05ce1b.png');
+        shouldExist('images/cat-5d0e5c9b.png');
+        shouldExist('images/zombie-0dc22dba.png');
+        compareFile('scripts/script-6bc83506.js', 'script.js');
         cb();
       });
   });
 
-  it('should handle complex replacement', function(cb) {
+  it('should handle markup', function(cb) {
     gulp
-      .src('test/input/index.html', { base: 'test/input' })
-      .pipe(revplace({
-        assets: es.merge(
-          gulp
-            .src('test/input/styles/style.css', { base: 'test/input' })
-            .pipe(revplace({
-              assets: gulp.src('test/input/images/*.{png,gif,jpg}', { base: 'test/input' }),
-              assetPath: 'assets'
-            })),
-          gulp
-            .src('test/input/scripts/script.js', { base: 'test/input' })
-            .pipe(revplace({
-              regex: /\$ASSET\(['"](.+)['"]\)/g,
-              assets: gulp.src('test/input/images/*.{png,gif,jpg}', { base: 'test/input' }),
-              assetPath: 'assets'
-            }))
-        ).pipe(size({ showFiles: true })),
-        assetPath: '',
-        flatten: true,
-        passAll: true
-      }))
-      .pipe(size({ showFiles: true }))
-      .pipe(gulp.dest('test/output'))
+      .src([inputDir + '/**/*.{html,js,css}'], { base: inputDir })
+      .pipe(rev())
+      .pipe(revplace())
+      .pipe(gulp.dest(outputDir))
       .on('end', function() {
-        compareFile('index.html');
-        checkFile('script-d550d550.js');
-        checkFile('style-35006e53.css');
+        shouldExist('scripts/script-6bc83506.js');
+        shouldExist('styles/style-21373b83.css');
+        shouldExist('index-16aa8b95.html');
+        compareFile('scripts/script-6bc83506.js', 'script-unmodified.js');
+        compareFile('styles/style-21373b83.css', 'style-unmodified.css');
+        compareFile('index-16aa8b95.html', 'index.html');
         cb();
       });
   });
 
-  after(function() {
-    rmDir('test/output');
+  it('should strip prefix from urls', function(cb) {
+    gulp
+      .src([inputDir + '/styles/style.css', inputDir + '/images/*.*'], { base: inputDir })
+      .pipe(rev())
+      .pipe(revplace({
+        stripPrefix: '/strip/'
+      }))
+      .pipe(gulp.dest(outputDir))
+      .on('end', function() {
+        shouldExist('styles/style-21373b83.css');
+        shouldExist('images/ghost-61865acd.png');
+        shouldExist('images/pumpkin-cb05ce1b.png');
+        shouldNotExist('images/cat-5d0e5c9b.png');
+        shouldNotExist('images/zombie-0dc22dba.png');
+        compareFile('styles/style-21373b83.css', 'style-strip.css');
+        cb();
+      });
+  });
+
+  it('should add prefix to urls', function(cb) {
+    gulp
+      .src([inputDir + '/styles/style.css', inputDir + '/images/*.*'], { base: inputDir })
+      .pipe(rev())
+      .pipe(revplace({
+        addPrefix: '//'
+      }))
+      .pipe(gulp.dest(outputDir))
+      .on('end', function() {
+        shouldExist('styles/style-21373b83.css');
+        shouldExist('images/ghost-61865acd.png');
+        shouldExist('images/pumpkin-cb05ce1b.png');
+        shouldNotExist('images/cat-5d0e5c9b.png');
+        shouldNotExist('images/zombie-0dc22dba.png');
+        compareFile('styles/style-21373b83.css', 'style-add.css');
+        cb();
+      });
+  });
+
+  it('should pass unmentioned assets if option was set', function(cb) {
+    gulp
+      .src([inputDir + '/images/*.*'], { base: inputDir })
+      .pipe(rev())
+      .pipe(revplace({
+        skipUnmentioned: false
+      }))
+      .pipe(gulp.dest(outputDir))
+      .on('end', function() {
+        shouldExist('images/ghost-61865acd.png');
+        shouldExist('images/pumpkin-cb05ce1b.png');
+        shouldExist('images/cat-5d0e5c9b.png');
+        shouldExist('images/zombie-0dc22dba.png');
+        cb();
+      });
+  });
+
+  it.only('should handle complex scenario', function(cb) {
+    es.merge(
+      gulp
+        .src([inputDir + '/index.html'], { base: inputDir }),
+      gulp
+        .src([inputDir + '/*/**/*.*'], { base: inputDir })
+        .pipe(rev())
+    )
+      .pipe(rename(function(path) {
+        path.dirname = '';
+      }))
+      .pipe(revplace())
+      .pipe(gulp.dest('test/output'))
+      .on('end', function() {
+        shouldExist('cat-5d0e5c9b.png');
+        shouldExist('ghost-61865acd.png');
+        shouldExist('index.html');
+        shouldExist('pumpkin-cb05ce1b.png');
+        shouldExist('script-6bc83506.js');
+        shouldExist('style-21373b83.css');
+        shouldExist('zombie-0dc22dba.png');
+        compareFile('index.html', 'index-complex.html');
+        compareFile('style-21373b83.css', 'style-complex.css');
+        compareFile('script-6bc83506.js', 'script-complex.js');
+        cb();
+      });
+  });
+
+  afterEach(function() {
+    rmDir(outputDir);
   });
 
 });
