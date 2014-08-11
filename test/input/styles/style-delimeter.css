@@ -1,0 +1,7 @@
+.first {
+    background-image: url(/images/ghost.png?param=value);
+}
+
+.second {
+    background-image: url(/images/pumpkin.png#hash);
+}

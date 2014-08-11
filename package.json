@@ -1,6 +1,6 @@
 {
   "name": "gulp-revplace",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Ultimate asset collector and rev-helper for gulp",
   "main": "index.js",
   "scripts": {

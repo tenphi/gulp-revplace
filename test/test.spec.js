@@ -162,6 +162,23 @@ describe('Test section', function() {
       });
   });
 
+  it('should handle delimeters', function(cb) {
+    gulp
+      .src([inputDir + '/styles/style-delimeter.css', inputDir + '/images/*.*'], { base: inputDir })
+      .pipe(rev())
+      .pipe(revplace())
+      .pipe(gulp.dest(outputDir))
+      .on('end', function() {
+        shouldExist('styles/style-delimeter-0a681edb.css');
+        shouldExist('images/ghost-61865acd.png');
+        shouldExist('images/pumpkin-cb05ce1b.png');
+        shouldNotExist('images/cat-5d0e5c9b.png');
+        shouldNotExist('images/zombie-0dc22dba.png');
+        compareFile('styles/style-delimeter-0a681edb.css', 'style-delimeter.css');
+        cb();
+      });
+  });
+
   it('should handle complex scenario', function(cb) {
     es.merge(
       gulp

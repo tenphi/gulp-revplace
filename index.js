@@ -53,7 +53,12 @@ module.exports = function(opt) {
 
       content = content.replace(regex, function(str) {
         var found = Array.prototype.slice.call(arguments, 1).filter(function(a) {return a;})[0];
-        var url = found.replace(/^\//, '');
+        var url = found.replace(/^\//, ''), suffix = '';
+        var match = url.split(/[#\?]/);
+        if (match) {
+          suffix = url.replace(match[0], '');
+          url = match[0];
+        }
         if (stripPrefix && stripPrefix === url.slice(0, stripPrefix.length)) {
           url = url.replace(stripPrefix, '');
         }
@@ -75,7 +80,7 @@ module.exports = function(opt) {
           if (absolutePath === url || relativePath === url) {
             if (skipUnmentioned)
               context.push(asset);
-            var replaced = addPrefix + newPath;
+            var replaced = addPrefix + newPath + suffix;
             str = str.replace(found, replaced);
             if (verbose)
               gutil.log('(' + chalk.blue(getNormalPath(file.path, file.base)) + ') ' + chalk.green(found) + ' ' + chalk.yellow('->') + ' ' + chalk.green(replaced));
