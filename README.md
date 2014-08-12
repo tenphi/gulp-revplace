@@ -56,7 +56,7 @@ Structure before revplace:
 </html>
 ```
 
-Lets make simple gulp task:
+Let's make simple gulp task:
 
 ```javascript
 var gulp = require('gulp');
