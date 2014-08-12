@@ -10,7 +10,7 @@ $ npm install --save-dev gulp-revplace
 
 ## Usage
 
-Structure before revplace:
+Structure before rev:
 
 ```base
 .
