@@ -14,16 +14,18 @@ Structure before rev:
 
 ``` bash
 .
-├── images
-│   ├── cat.png
-│   ├── ghost.png
-│   ├── pumpkin.png
-│   └── zombie.png
-├── index.html
-├── scripts
-│   └── script.js
-└── styles
-    └── style.css
+├── build
+└── static
+    ├── images
+    │   ├── cat.png
+    │   ├── ghost.png
+    │   ├── pumpkin.png
+    │   └── zombie.png
+    ├── index.html
+    ├── scripts
+    │   └── script.js
+    └── styles
+        └── style.css
 ```
 
 `script.js` and `style.css` have references to all images. `index.html` have references to `script.js` and `style.css`.
@@ -81,16 +83,29 @@ After execution file names will be changed and all references will be replaced.
 
 ```bash
 .
-├── images
-│   ├── cat-5d0e5c9b.png
-│   ├── ghost-61865acd.png
-│   ├── pumpkin-cb05ce1b.png
-│   └── zombie-0dc22dba.png
-├── index.html
-├── scripts
-│   └── script-6bc83506.js
-└── styles
-    └── style-21373b83.css
+├── build
+│   ├── images
+│   │   ├── cat-1ccfa741.png
+│   │   ├── ghost-aa908d61.png
+│   │   ├── pumpkin-5ca50d04.png
+│   │   └── zombie-68157885.png
+│   ├── index.html
+│   ├── scripts
+│   │   └── script-921c4eaf.js
+│   └── styles
+│       └── style-cc726e1b.css
+└── static
+    ├── images
+    │   ├── cat.png
+    │   ├── ghost.png
+    │   ├── pumpkin.png
+    │   └── zombie.png
+    ├── index.html
+    ├── scripts
+    │   └── script.js
+    └── styles
+        └── style.css
+```
 ```
 
 ```css
