@@ -62,6 +62,7 @@ Let's make simple gulp task:
 
 ```javascript
 var gulp = require('gulp');
+var rev = require('gulp-rev');
 var revplace = require('gulp-revplace');
 var es = require('event-stream');
 var baseDir = 'static';
