@@ -4,7 +4,7 @@ Simple helper for [gulp-rev](http://github.com/sindresorhus/gulp-rev) to fix all
 
 ## Install
 
-```bash
+``` bash
 $ npm install --save-dev gulp-revplace
 ```
 
@@ -12,7 +12,7 @@ $ npm install --save-dev gulp-revplace
 
 Structure before rev:
 
-```base
+``` bash
 .
 ├── images
 │   ├── cat.png
