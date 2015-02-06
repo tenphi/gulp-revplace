@@ -4,7 +4,7 @@ Simple helper for [gulp-rev](http://github.com/sindresorhus/gulp-rev) to fix all
 
 ## Install
 
-``` bash
+```bash
 $ npm install --save-dev gulp-revplace
 ```
 
@@ -12,7 +12,7 @@ $ npm install --save-dev gulp-revplace
 
 Structure before rev:
 
-``` bash
+```bash
 .
 ├── build
 └── static
@@ -105,7 +105,6 @@ After execution file names will be changed and all references will be replaced.
     │   └── script.js
     └── styles
         └── style.css
-```
 ```
 
 ```css
