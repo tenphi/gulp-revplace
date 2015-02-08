@@ -23,6 +23,7 @@
   "dependencies": {
     "chalk": "^0.4.0",
     "gulp-util": "^2.2.19",
+    "mmmagic": "^0.3.8",
     "through2": "^1.0.0"
   },
   "devDependencies": {
@@ -34,7 +35,6 @@
     "gulp-rename": "^1.2.0",
     "gulp-rev": "^1.0.0",
     "gulp-size": "^0.4.0",
-    "mmmagic": "^0.3.8",
     "mocha": "^1.20.1",
     "through2": "^0.5.1"
   }
